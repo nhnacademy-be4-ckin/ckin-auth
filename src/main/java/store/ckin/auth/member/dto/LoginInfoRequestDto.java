@@ -4,17 +4,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Login 요청을 받아 응답하는 dto 입니다.
+ * Front Server 에서 보내는 login 요청 DTO 입니다.
  *
  * @author : jinwoolee
  * @version : 2024. 02. 20.
  */
 @Getter
 @NoArgsConstructor
-public class LoginResponseDto {
-    String email;
+public class LoginInfoRequestDto {
+    private String email;
 
-    String password;
-
-    String role;
+    private String password;
 }

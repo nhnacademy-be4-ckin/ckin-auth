@@ -1,7 +1,7 @@
 package store.ckin.auth.member.adapter;
 
-import store.ckin.auth.member.dto.LoginRequestDto;
-import store.ckin.auth.member.dto.LoginResponseDto;
+import store.ckin.auth.member.dto.MemberInfoRequestDto;
+import store.ckin.auth.member.dto.MemberInfoResponseDto;
 
 /**
  * Member 에 관한 Auth 를 처리하는 Adapter interface 입니다.
@@ -10,5 +10,5 @@ import store.ckin.auth.member.dto.LoginResponseDto;
  * @version : 2024. 02. 19.
  */
 public interface MemberAuthAdapter {
-    LoginResponseDto getLoginInfo(LoginRequestDto loginRequestDto);
+    MemberInfoResponseDto getLoginInfo(MemberInfoRequestDto memberInfoRequestDto);
 }
