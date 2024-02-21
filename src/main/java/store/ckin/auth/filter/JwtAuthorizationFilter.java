@@ -41,7 +41,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwtHeader = request.getHeader("Authorization");
 
         if (Objects.isNull(jwtHeader) || !jwtHeader.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
             return;
         }
@@ -58,14 +58,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             MemberInfoRequestDto requestDto = new MemberInfoRequestDto(email);
 
             MemberInfoResponseDto responseDto = memberAuthAdapter.getLoginInfo(requestDto);
-            Collection<GrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(responseDto::getRole);
 
-            User user = new User(responseDto.getEmail(), responseDto.getPassword(), authorities);
+            if (Objects.isNull(responseDto)) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
-            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                return;
+            }
         }
 
         chain.doFilter(request, response);

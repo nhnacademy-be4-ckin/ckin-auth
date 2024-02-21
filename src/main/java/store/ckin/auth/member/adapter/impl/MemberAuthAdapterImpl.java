@@ -36,13 +36,13 @@ public class MemberAuthAdapterImpl implements MemberAuthAdapter {
 
         HttpEntity<MemberInfoRequestDto> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<MemberInfoResponseDto> exchange = restTemplate.exchange(
+        ResponseEntity<MemberInfoResponseDto> responseEntity = restTemplate.exchange(
                 serverPortProperties.getApiUri() + "/api/login",
                 HttpMethod.POST,
                 requestEntity,
                 new ParameterizedTypeReference<>() {
                 });
 
-        return exchange.getBody();
+        return responseEntity.getBody();
     }
 }
