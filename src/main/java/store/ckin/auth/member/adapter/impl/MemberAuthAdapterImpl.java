@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import store.ckin.auth.config.ServerPortProperties;
 import store.ckin.auth.member.adapter.MemberAuthAdapter;
-import store.ckin.auth.member.dto.MemberInfoRequestDto;
-import store.ckin.auth.member.dto.MemberInfoResponseDto;
+import store.ckin.auth.member.dto.MemberAuthRequestDto;
+import store.ckin.auth.member.dto.MemberAuthResponseDto;
 
 /**
  * MemberAuthAdapter 의 구현체 입니다.
@@ -29,14 +29,14 @@ public class MemberAuthAdapterImpl implements MemberAuthAdapter {
     private final ServerPortProperties serverPortProperties;
 
     @Override
-    public MemberInfoResponseDto getLoginInfo(MemberInfoRequestDto memberInfoRequestDto) {
+    public MemberAuthResponseDto getLoginInfo(MemberAuthRequestDto memberAuthRequestDto) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
-        HttpEntity<MemberInfoRequestDto> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<MemberAuthRequestDto> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<MemberInfoResponseDto> responseEntity = restTemplate.exchange(
+        ResponseEntity<MemberAuthResponseDto> responseEntity = restTemplate.exchange(
                 serverPortProperties.getApiUri() + "/api/login",
                 HttpMethod.POST,
                 requestEntity,

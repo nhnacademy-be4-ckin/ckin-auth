@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import store.ckin.auth.member.adapter.MemberAuthAdapter;
-import store.ckin.auth.member.dto.MemberInfoRequestDto;
-import store.ckin.auth.member.dto.MemberInfoResponseDto;
+import store.ckin.auth.member.dto.MemberAuthRequestDto;
+import store.ckin.auth.member.dto.MemberAuthResponseDto;
 
 /**
  * PrincipalService.
@@ -26,8 +26,8 @@ public class MemberDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        MemberInfoRequestDto memberInfoRequestDto = new MemberInfoRequestDto(email);
-        MemberInfoResponseDto responseDto = memberAuthAdapter.getLoginInfo(memberInfoRequestDto);
+        MemberAuthRequestDto memberAuthRequestDto = new MemberAuthRequestDto(email);
+        MemberAuthResponseDto responseDto = memberAuthAdapter.getLoginInfo(memberAuthRequestDto);
 
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(responseDto::getRole);

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 로그인 요청을 위한 DTO 입니다.
+ * 사용자 인증 요청에 사용하는 DTO 입니다.
  *
  * @author : jinwoolee
  * @version : 2024. 02. 19.
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberInfoRequestDto {
+public class MemberAuthRequestDto {
     @Email
     @NotBlank
     private String email;

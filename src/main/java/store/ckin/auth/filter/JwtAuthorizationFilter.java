@@ -3,23 +3,16 @@ package store.ckin.auth.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import store.ckin.auth.member.adapter.MemberAuthAdapter;
-import store.ckin.auth.member.dto.MemberInfoRequestDto;
-import store.ckin.auth.member.dto.MemberInfoResponseDto;
+import store.ckin.auth.member.dto.MemberAuthRequestDto;
+import store.ckin.auth.member.dto.MemberAuthResponseDto;
 
 /**
  * JWT 를 이용하여 Member 인가를 처리하는 Filter 클래스 입니다.
@@ -55,9 +48,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 .asString();
 
         if (Objects.nonNull(email)) {
-            MemberInfoRequestDto requestDto = new MemberInfoRequestDto(email);
+            MemberAuthRequestDto requestDto = new MemberAuthRequestDto(email);
 
-            MemberInfoResponseDto responseDto = memberAuthAdapter.getLoginInfo(requestDto);
+            MemberAuthResponseDto responseDto = memberAuthAdapter.getLoginInfo(requestDto);
 
             if (Objects.isNull(responseDto)) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);

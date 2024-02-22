@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        log.info("JwtAuthenticationFilter : Try Login");
+        log.debug("JwtAuthenticationFilter : Try Login");
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
