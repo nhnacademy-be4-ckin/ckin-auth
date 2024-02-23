@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import store.ckin.auth.filter.JwtAuthenticationFilter;
 import store.ckin.auth.member.provider.MemberAuthenticationProvider;
 import store.ckin.auth.member.service.MemberDetailsService;
-import store.ckin.auth.util.JwtProvider;
+import store.ckin.auth.token.service.TokenService;
 
 /**
  * Security 설정을 위한 클래스 입니다.
@@ -28,7 +28,7 @@ import store.ckin.auth.util.JwtProvider;
 public class SecurityConfig {
     private final MemberDetailsService memberDetailsService;
 
-    private final JwtProvider jwtProvider;
+    private final TokenService tokenService;
 
     /**
      * Security Filter 를 설정하는 Bean method 입니다.
@@ -59,7 +59,7 @@ public class SecurityConfig {
      */
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter =  new JwtAuthenticationFilter(jwtProvider);
+        JwtAuthenticationFilter filter =  new JwtAuthenticationFilter(tokenService);
         filter.setAuthenticationManager(authenticationManager(null));
         filter.setUsernameParameter("email");
         filter.setPasswordParameter("password");
