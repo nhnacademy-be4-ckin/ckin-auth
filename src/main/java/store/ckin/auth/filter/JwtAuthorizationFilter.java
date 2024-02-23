@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -50,9 +51,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (Objects.nonNull(email)) {
             MemberAuthRequestDto requestDto = new MemberAuthRequestDto(email);
 
-            MemberAuthResponseDto responseDto = memberAuthAdapter.getLoginInfo(requestDto);
+            Optional<MemberAuthResponseDto> responseDto = memberAuthAdapter.getLoginInfo(requestDto);
 
-            if (Objects.isNull(responseDto)) {
+            if (responseDto.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
                 return;

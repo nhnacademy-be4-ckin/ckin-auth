@@ -18,6 +18,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import store.ckin.auth.member.dto.LoginInfoRequestDto;
+import store.ckin.auth.util.JwtProvider;
 
 
 /**
@@ -29,6 +30,8 @@ import store.ckin.auth.member.dto.LoginInfoRequestDto;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+    private final JwtProvider jwtProvider;
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
@@ -54,14 +57,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(
             HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
-        User user = (User) authResult.getPrincipal();
+        String accessToken = jwtProvider.createAccessToken(authResult);
 
-        String jwtToken = JWT.create()
-                .withSubject("ckinToken")
-                .withExpiresAt(new Date(System.currentTimeMillis() + (1000 * 60 * 10)))
-                .withClaim("email", user.getUsername())
-                .sign(Algorithm.HMAC512("ckin"));
 
-        response.addHeader("Authorization", "Bearer " + jwtToken);
+        response.addHeader("Authorization", accessToken);
     }
 }

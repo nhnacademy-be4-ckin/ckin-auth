@@ -2,6 +2,7 @@ package store.ckin.auth.member.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -27,11 +28,17 @@ public class MemberDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         MemberAuthRequestDto memberAuthRequestDto = new MemberAuthRequestDto(email);
-        MemberAuthResponseDto responseDto = memberAuthAdapter.getLoginInfo(memberAuthRequestDto);
+        Optional<MemberAuthResponseDto> responseDto = memberAuthAdapter.getLoginInfo(memberAuthRequestDto);
+        MemberAuthResponseDto authInfo;
 
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(responseDto::getRole);
+        if (responseDto.isPresent()) {
+            authInfo = responseDto.get();
+            Collection<GrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(authInfo::getRole);
 
-        return new User(responseDto.getEmail(), responseDto.getPassword(), authorities);
+            return new User(authInfo.getId().toString(), authInfo.getPassword(), authorities);
+        }
+
+        throw new UsernameNotFoundException(email + " : email 에 대한 정보가 없어 인증에 실패 하였습니다.");
     }
 }

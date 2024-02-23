@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MemberAuthResponseDto {
+    Long id;
+
     String email;
 
     String password;

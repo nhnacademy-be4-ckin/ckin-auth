@@ -8,12 +8,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import store.ckin.auth.filter.JwtAuthenticationFilter;
-import store.ckin.auth.filter.JwtAuthorizationFilter;
-import store.ckin.auth.member.adapter.MemberAuthAdapter;
+import store.ckin.auth.member.provider.MemberAuthenticationProvider;
+import store.ckin.auth.member.service.MemberDetailsService;
+import store.ckin.auth.util.JwtProvider;
 
 /**
  * Security 설정을 위한 클래스 입니다.
@@ -25,9 +26,9 @@ import store.ckin.auth.member.adapter.MemberAuthAdapter;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final MemberAuthAdapter memberAuthAdapter;
+    private final MemberDetailsService memberDetailsService;
 
-    private final AuthenticationConfiguration authenticationConfiguration;
+    private final JwtProvider jwtProvider;
 
     /**
      * Security Filter 를 설정하는 Bean method 입니다.
@@ -45,16 +46,40 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .logout().disable()
-                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), memberAuthAdapter), BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
 
         return http.build();
     }
 
+    /**
+     * JwtAuthenticationFilter 를 Bean 으로 등록.
+     *
+     * @return JwtAuthenticationFilter
+     */
     @Bean
-    public AuthenticationManager authenticationManager()
+    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        JwtAuthenticationFilter filter =  new JwtAuthenticationFilter(jwtProvider);
+        filter.setAuthenticationManager(authenticationManager(null));
+        filter.setUsernameParameter("email");
+        filter.setPasswordParameter("password");
+
+        return filter;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bcryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public MemberAuthenticationProvider memberAuthenticationProvider() {
+        return new MemberAuthenticationProvider(memberDetailsService, bcryptPasswordEncoder());
     }
 }
