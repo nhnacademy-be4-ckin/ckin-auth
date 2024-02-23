@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import store.ckin.auth.filter.JwtAuthenticationFilter;
-import store.ckin.auth.member.provider.MemberAuthenticationProvider;
+import store.ckin.auth.provider.MemberAuthenticationProvider;
 import store.ckin.auth.member.service.MemberDetailsService;
 import store.ckin.auth.token.service.TokenService;
 
