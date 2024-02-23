@@ -61,6 +61,7 @@ public class SecurityConfig {
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         JwtAuthenticationFilter filter =  new JwtAuthenticationFilter(tokenService);
         filter.setAuthenticationManager(authenticationManager(null));
+        filter.setFilterProcessesUrl("/auth/login");
         filter.setUsernameParameter("email");
         filter.setPasswordParameter("password");
 
