@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import store.ckin.auth.member.adapter.MemberAuthAdapter;
 import store.ckin.auth.member.dto.MemberAuthRequestDto;
 import store.ckin.auth.member.dto.MemberAuthResponseDto;
+import store.ckin.auth.provider.JwtProvider;
 
 /**
  * JWT 를 이용하여 Member 인가를 처리하는 Filter 클래스 입니다.
@@ -34,32 +35,41 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             throws IOException, ServletException {
         String jwtHeader = request.getHeader("Authorization");
 
-        if (Objects.isNull(jwtHeader) || !jwtHeader.startsWith("Bearer ")) {
+        if (Objects.isNull(jwtHeader) || !jwtHeader.startsWith(JwtProvider.AUTHORIZATION_SCHEME_BEARER)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
             return;
         }
 
-        String jwt = jwtHeader.replace("Bearer ", "");
+        String jwt = jwtHeader.replace(JwtProvider.AUTHORIZATION_SCHEME_BEARER, "");
 
-        String email = JWT.require(Algorithm.HMAC512("ckin"))
+        Long id = JWT.require(Algorithm.HMAC512(JwtProvider.SECRET_KEY))
                 .build()
                 .verify(jwt)
-                .getClaim("email")
-                .asString();
+                .getClaim("id")
+                .asLong();
 
-        if (Objects.nonNull(email)) {
-            MemberAuthRequestDto requestDto = new MemberAuthRequestDto(email);
+        String email = request.getParameter("email");
 
-            Optional<MemberAuthResponseDto> responseDto = memberAuthAdapter.getLoginInfo(requestDto);
+        if (Objects.isNull(id) || Objects.isNull(email)) {
+            return;
+        }
 
-            if (responseDto.isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        MemberAuthRequestDto requestDto = new MemberAuthRequestDto(email);
+
+        Optional<MemberAuthResponseDto> responseDto = memberAuthAdapter.getLoginInfo(requestDto);
+        MemberAuthResponseDto memberInfo;
+
+        if (responseDto.isPresent()) {
+            memberInfo = responseDto.get();
+
+            if (!Objects.equals(memberInfo.getId(), id)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
                 return;
             }
-        }
 
-        chain.doFilter(request, response);
+            chain.doFilter(request, response);
+        }
     }
 }

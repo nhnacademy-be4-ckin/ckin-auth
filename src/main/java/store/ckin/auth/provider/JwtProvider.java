@@ -45,6 +45,7 @@ public class JwtProvider {
                 .withSubject(tokenType)
                 .withClaim("id", id)
                 .withClaim("authority", authority)
+                .withIssuedAt(now)
                 .withExpiresAt(new Date(now.getTime() + expirationTime))
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }

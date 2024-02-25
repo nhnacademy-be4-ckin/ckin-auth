@@ -15,7 +15,7 @@ import store.ckin.auth.member.dto.MemberAuthRequestDto;
 import store.ckin.auth.member.dto.MemberAuthResponseDto;
 
 /**
- * PrincipalService.
+ * 인증된 멤버의 정보를 관리하는 Service 클래스 입니다.
  *
  * @author : jinwoolee
  * @version : 2024. 02. 19.
