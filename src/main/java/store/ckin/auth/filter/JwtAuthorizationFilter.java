@@ -4,16 +4,16 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import store.ckin.auth.member.adapter.MemberAuthAdapter;
-import store.ckin.auth.member.dto.MemberAuthRequestDto;
-import store.ckin.auth.member.dto.MemberAuthResponseDto;
+import store.ckin.auth.member.service.MemberDetailsService;
 import store.ckin.auth.provider.JwtProvider;
 
 /**
@@ -22,12 +22,14 @@ import store.ckin.auth.provider.JwtProvider;
  * @author : jinwoolee
  * @version : 2024. 02. 20.
  */
+@Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    private final MemberAuthAdapter memberAuthAdapter;
+    private final MemberDetailsService memberDetailsService;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberAuthAdapter memberAuthAdapter) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
+                                  MemberDetailsService memberDetailsService) {
         super(authenticationManager);
-        this.memberAuthAdapter = memberAuthAdapter;
+        this.memberDetailsService = memberDetailsService;
     }
 
     @Override
@@ -55,21 +57,19 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        MemberAuthRequestDto requestDto = new MemberAuthRequestDto(email);
+        try {
+            UserDetails memberDetails = memberDetailsService.loadUserByUsername(email);
 
-        Optional<MemberAuthResponseDto> responseDto = memberAuthAdapter.getLoginInfo(requestDto);
-        MemberAuthResponseDto memberInfo;
-
-        if (responseDto.isPresent()) {
-            memberInfo = responseDto.get();
-
-            if (!Objects.equals(memberInfo.getId(), id)) {
+            if (!memberDetails.getUsername().equals(id.toString())) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
                 return;
             }
 
             chain.doFilter(request, response);
+        } catch (UsernameNotFoundException ex) {
+            log.error("JwtAuthorizationFilter : Not found information matching your email");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 }
