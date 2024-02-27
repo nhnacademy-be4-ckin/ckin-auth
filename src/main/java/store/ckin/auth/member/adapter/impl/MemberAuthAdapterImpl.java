@@ -35,7 +35,7 @@ public class MemberAuthAdapterImpl implements MemberAuthAdapter {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
-        HttpEntity<MemberAuthRequestDto> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<MemberAuthRequestDto> requestEntity = new HttpEntity<>(memberAuthRequestDto, headers);
 
         ResponseEntity<Optional<MemberAuthResponseDto>> responseEntity = restTemplate.exchange(
                 serverPortProperties.getApiUri() + "/api/login",
