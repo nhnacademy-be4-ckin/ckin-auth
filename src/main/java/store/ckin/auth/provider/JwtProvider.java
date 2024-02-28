@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.time.Duration;
 import java.util.Date;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -24,9 +23,9 @@ public class JwtProvider {
 
     public static final String REFRESH_TOKEN_SUBJECT = "ckin_refresh_token";
 
-    public static final long ACCESS_EXPIRATION_TIME = Duration.ofHours(1).toMillis();
+    public static final long ACCESS_EXPIRATION_TIME = Duration.ofSeconds(30).toMillis();
 
-    public static final long REFRESH_EXPIRATION_TIME = Duration.ofDays(2).toMillis();
+    public static final long REFRESH_EXPIRATION_TIME = Duration.ofMinutes(3).toMillis();
 
     public static final String AUTHORIZATION_SCHEME_BEARER = "Bearer ";
 
@@ -57,12 +56,6 @@ public class JwtProvider {
         return createToken(uuid, REFRESH_TOKEN_SUBJECT, REFRESH_EXPIRATION_TIME);
     }
 
-    /**
-     * 토큰을 검증하는 메서드 입니다.
-     *
-     * @param token JWT Token
-     * @return 인증 여부
-     */
     public boolean isValidate(String token) {
         return JWT.decode(token).getSignature().equals(SECRET_KEY);
     }
