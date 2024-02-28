@@ -3,19 +3,16 @@ package store.ckin.auth.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import store.ckin.auth.filter.JwtAuthenticationFilter;
 import store.ckin.auth.filter.JwtAuthorizationFilter;
-import store.ckin.auth.member.service.MemberDetailsService;
-import store.ckin.auth.provider.MemberAuthenticationProvider;
-import store.ckin.auth.token.service.TokenService;
+import store.ckin.auth.provider.JwtProvider;
 
 /**
  * Security 설정을 위한 클래스 입니다.
@@ -27,9 +24,7 @@ import store.ckin.auth.token.service.TokenService;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final MemberDetailsService memberDetailsService;
-
-    private final TokenService tokenService;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     /**
      * Security Filter 를 설정하는 Bean method 입니다.
@@ -47,46 +42,24 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .logout().disable()
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-        ;
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/login").permitAll()
+                        .anyRequest().permitAll())
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /**
-     * JwtAuthenticationFilter 를 Bean 으로 등록.
-     *
-     * @return JwtAuthenticationFilter
-     */
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter =  new JwtAuthenticationFilter(tokenService);
-        filter.setAuthenticationManager(authenticationManager(null));
-        filter.setFilterProcessesUrl("/auth/login");
-        filter.setUsernameParameter("email");
-        filter.setPasswordParameter("password");
-
-        return filter;
-    }
-
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
-        return new JwtAuthorizationFilter(authenticationManager(null), memberDetailsService);
-    }
-
-    @Bean
-    public BCryptPasswordEncoder bcryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new JwtAuthorizationFilter(
+                authenticationManager(null),
+                new JwtProvider(redisTemplate));
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public MemberAuthenticationProvider memberAuthenticationProvider() {
-        return new MemberAuthenticationProvider(memberDetailsService, bcryptPasswordEncoder());
     }
 }

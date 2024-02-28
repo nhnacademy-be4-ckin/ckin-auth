@@ -1,7 +1,7 @@
 package store.ckin.auth.token.service;
 
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.core.Authentication;
+import store.ckin.auth.token.service.domain.TokenRequestDto;
+import store.ckin.auth.token.service.domain.TokenResponseDto;
 
 /**
  * Token 관리 로직을 처리하는 Service interface 입니다.
@@ -10,5 +10,5 @@ import org.springframework.security.core.Authentication;
  * @version : 2024. 02. 23.
  */
 public interface TokenService {
-    void issueToken(HttpServletResponse response, Authentication authResult);
+    TokenResponseDto issueToken(TokenRequestDto tokenRequestDto);
 }

@@ -1,13 +1,16 @@
 package store.ckin.auth.token.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import store.ckin.auth.provider.JwtProvider;
 import store.ckin.auth.token.service.TokenService;
+import store.ckin.auth.token.service.domain.TokenRequestDto;
+import store.ckin.auth.token.service.domain.TokenResponseDto;
 
 /**
  * TokenService 의 구현체 입니다.
@@ -20,16 +23,24 @@ import store.ckin.auth.token.service.TokenService;
 public class TokenServiceImpl implements TokenService {
     private final JwtProvider jwtProvider;
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public void issueToken(HttpServletResponse response, Authentication authResult) {
-        String accessToken = jwtProvider.createAccessToken(authResult);
-        String refreshToken = jwtProvider.createRefreshToken(authResult);
+    public TokenResponseDto issueToken(TokenRequestDto tokenRequestDto) {
+        String uuid = UUID.randomUUID().toString();
+        String refreshToken = jwtProvider.createRefreshToken(uuid);
 
-        response.setHeader("Authorization", accessToken);
+        redisTemplate.opsForHash()
+                .put(uuid, JwtProvider.REFRESH_TOKEN_SUBJECT, refreshToken);
 
-        redisTemplate.opsForValue()
-                .set(authResult.getName(), refreshToken, JwtProvider.REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+        String id = tokenRequestDto.getId();
+
+        redisTemplate.opsForHash()
+                .put(uuid, "id", id);
+        redisTemplate.expire(uuid, JwtProvider.REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+
+        String accessToken = jwtProvider.createAccessToken(uuid);
+
+        return new TokenResponseDto(accessToken, refreshToken);
     }
 }

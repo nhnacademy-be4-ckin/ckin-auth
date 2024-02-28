@@ -23,6 +23,9 @@ public class RedisConfig {
     @Value("${spring.redis.port}")
     private int port;
 
+    @Value("${spring.redis.password}")
+    private String password;
+
     /**
      * Redis connection factory redis connection factory.
      *
@@ -33,6 +36,7 @@ public class RedisConfig {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(host);
         config.setPort(port);
+        config.setPassword(password);
 
         return new LettuceConnectionFactory(config);
     }
@@ -44,7 +48,7 @@ public class RedisConfig {
      */
     @Bean
     public RedisTemplate<?, ?> redisTemplate() {
-        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         redisTemplate.setConnectionFactory(redisConnectionFactory());

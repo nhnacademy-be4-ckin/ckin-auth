@@ -4,8 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.time.Duration;
 import java.util.Date;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,38 +30,40 @@ public class JwtProvider {
 
     public static final String AUTHORIZATION_SCHEME_BEARER = "Bearer ";
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     /**
      * JWT Access Token 을 생성하는 메서드 입니다.
      *
-     * @param authentication 인증된 계정의 정보를 담은 Authentication
      * @return JWT Access Token
      */
-    private String createToken(Authentication authentication, String tokenType, Long expirationTime) {
-        Long id = Long.parseLong(authentication.getName());
-        String authority = authentication.getAuthorities().toString();
+    private String createToken(String uuid, String tokenType, Long expirationTime) {
         Date now = new Date();
 
         return AUTHORIZATION_SCHEME_BEARER
                 + JWT.create()
                 .withSubject(tokenType)
-                .withClaim("id", id)
-                .withClaim("authority", authority)
+                .withClaim("uuid", uuid)
                 .withIssuedAt(now)
                 .withExpiresAt(new Date(now.getTime() + expirationTime))
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }
 
-    public String createAccessToken(Authentication authentication) {
-        return createToken(authentication, ACCESS_TOKEN_SUBJECT, ACCESS_EXPIRATION_TIME);
+    public String createAccessToken(String uuid) {
+        return createToken(uuid, ACCESS_TOKEN_SUBJECT, ACCESS_EXPIRATION_TIME);
+    }
+
+    public String createRefreshToken(String uuid) {
+        return createToken(uuid, REFRESH_TOKEN_SUBJECT, REFRESH_EXPIRATION_TIME);
     }
 
     /**
-     * JWT Refresh Token 을 생성하는 메서드 입니다.
+     * 토큰을 검증하는 메서드 입니다.
      *
-     * @param authentication 인증된 Member 의 정보가 담겨 있는 Authentication
-     * @return JWT Refresh Token
+     * @param token JWT Token
+     * @return 인증 여부
      */
-    public String createRefreshToken(Authentication authentication) {
-        return createToken(authentication, REFRESH_TOKEN_SUBJECT, REFRESH_EXPIRATION_TIME);
+    public boolean isValidate(String token) {
+        return JWT.decode(token).getSignature().equals(SECRET_KEY);
     }
 }
