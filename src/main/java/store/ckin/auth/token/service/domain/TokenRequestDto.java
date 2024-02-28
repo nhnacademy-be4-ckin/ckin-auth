@@ -1,6 +1,7 @@
 package store.ckin.auth.token.service.domain;
 
 import javax.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class TokenRequestDto {
     @NotBlank
     String id;

@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import store.ckin.auth.filter.JwtAuthorizationFilter;
 import store.ckin.auth.provider.JwtProvider;
+import store.ckin.auth.token.service.TokenService;
 
 /**
  * Security 설정을 위한 클래스 입니다.
@@ -25,6 +26,8 @@ import store.ckin.auth.provider.JwtProvider;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final RedisTemplate<String, Object> redisTemplate;
+
+    private final TokenService tokenService;
 
     /**
      * Security Filter 를 설정하는 Bean method 입니다.
@@ -54,7 +57,9 @@ public class SecurityConfig {
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
         return new JwtAuthorizationFilter(
                 authenticationManager(null),
-                new JwtProvider(redisTemplate));
+                new JwtProvider(redisTemplate),
+                tokenService,
+                redisTemplate);
     }
 
     @Bean

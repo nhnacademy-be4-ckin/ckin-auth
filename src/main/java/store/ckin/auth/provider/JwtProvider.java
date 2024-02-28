@@ -59,4 +59,8 @@ public class JwtProvider {
     public boolean isValidate(String token) {
         return JWT.decode(token).getSignature().equals(SECRET_KEY);
     }
+
+    public String resolveToken(String token, String name) {
+        return JWT.decode(token).getClaim(name).asString();
+    }
 }
