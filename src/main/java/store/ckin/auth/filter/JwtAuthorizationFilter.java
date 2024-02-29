@@ -42,14 +42,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        String refreshToken = request.getHeader("Authorization");
+        String header = request.getHeader("Authorization");
 
-        if (Objects.isNull(refreshToken) || !refreshToken.startsWith(JwtProvider.AUTHORIZATION_SCHEME_BEARER)) {
+        if (Objects.isNull(header) || !header.startsWith(JwtProvider.AUTHORIZATION_SCHEME_BEARER)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             chain.doFilter(request, response);
 
             return;
         }
+
+        String refreshToken = header.replace(JwtProvider.AUTHORIZATION_SCHEME_BEARER, "");
+        log.info(refreshToken);
 
         if (!jwtProvider.isValidate(refreshToken)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -57,16 +60,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
             return;
         }
-
         // 인증이 되었다면 Refresh Token Rotation 에 의한 재발급
-        String uuid = jwtProvider.resolveToken(refreshToken, "uuid");
-        String id = (String) redisTemplate.opsForHash().get(uuid, "id");
-        TokenRequestDto tokenRequestDto = new TokenRequestDto(id);
-        TokenResponseDto tokenResponseDto = tokenService.issueToken(tokenRequestDto);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader("AccessToken", tokenResponseDto.getAccessToken());
-        response.setHeader("RefreshToken", tokenResponseDto.getAccessToken());
+//        String uuid = jwtProvider.resolveToken(refreshToken, "uuid");
+//        String id = (String) redisTemplate.opsForHash().get(uuid, "id");
+//        TokenRequestDto tokenRequestDto = new TokenRequestDto(id);
+//        TokenResponseDto tokenResponseDto = tokenService.issueToken(tokenRequestDto);
+//
+//        response.setStatus(HttpServletResponse.SC_OK);
+//        response.setHeader("AccessToken", tokenResponseDto.getAccessToken());
+//        response.setHeader("RefreshToken", tokenResponseDto.getAccessToken());
 
         chain.doFilter(request, response);
     }
