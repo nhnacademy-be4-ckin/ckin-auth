@@ -77,6 +77,13 @@ public class JwtProvider {
         }
     }
 
+    /**
+     * 토큰에서 Claim 값을 가져오는 메서드 입니다.
+     *
+     * @param token Token
+     * @param name  Claim key
+     * @return Claim Value
+     */
     public String resolveToken(String token, String name) {
         return JWT.decode(token)
                 .getClaim(name)

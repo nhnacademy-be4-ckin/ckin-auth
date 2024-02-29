@@ -57,9 +57,7 @@ public class SecurityConfig {
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
         return new JwtAuthorizationFilter(
                 authenticationManager(null),
-                new JwtProvider(redisTemplate),
-                tokenService,
-                redisTemplate);
+                new JwtProvider(redisTemplate));
     }
 
     @Bean

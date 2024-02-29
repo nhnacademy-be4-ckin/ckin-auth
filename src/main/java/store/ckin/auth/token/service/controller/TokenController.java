@@ -1,6 +1,5 @@
 package store.ckin.auth.token.service.controller;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,10 +59,6 @@ public class TokenController {
         String id = (String) redisTemplate.opsForHash().get(uuid, "id");
         TokenRequestDto tokenRequestDto = new TokenRequestDto(id);
         TokenResponseDto tokenResponseDto = tokenService.issueToken(tokenRequestDto);
-
-        log.info("access token : {}", tokenResponseDto.getAccessToken());
-        log.info("refresh token : {}", tokenResponseDto.getRefreshToken());
-        log.info("Reissue Success");
 
         return ResponseEntity
                 .status(HttpStatus.OK)
