@@ -1,6 +1,8 @@
 package store.ckin.auth.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -15,15 +17,15 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * @author : jinwoolee
  * @version : 2024. 02. 23.
  */
+@Getter
+@Setter
 @Configuration
+@ConfigurationProperties(prefix = "spring.redis")
 public class RedisConfig {
-    @Value("${spring.redis.host}")
     private String host;
 
-    @Value("${spring.redis.port}")
     private int port;
 
-    @Value("${spring.redis.password}")
     private String password;
 
     /**

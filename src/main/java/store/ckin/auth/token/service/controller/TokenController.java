@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import store.ckin.auth.provider.JwtProvider;
 import store.ckin.auth.token.service.TokenService;
-import store.ckin.auth.token.service.domain.TokenAuthRequestDto;
 import store.ckin.auth.token.service.domain.TokenRequestDto;
 import store.ckin.auth.token.service.domain.TokenResponseDto;
 
