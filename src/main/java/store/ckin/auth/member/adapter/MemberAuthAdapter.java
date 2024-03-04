@@ -1,6 +1,5 @@
 package store.ckin.auth.member.adapter;
 
-import java.util.Optional;
 import store.ckin.auth.member.dto.MemberAuthRequestDto;
 import store.ckin.auth.member.dto.MemberAuthResponseDto;
 
@@ -11,5 +10,5 @@ import store.ckin.auth.member.dto.MemberAuthResponseDto;
  * @version : 2024. 02. 19.
  */
 public interface MemberAuthAdapter {
-    Optional<MemberAuthResponseDto> getLoginInfo(MemberAuthRequestDto memberAuthRequestDto);
+    MemberAuthResponseDto getLoginInfo(MemberAuthRequestDto memberAuthRequestDto);
 }

@@ -30,14 +30,14 @@ public class MemberAuthAdapterImpl implements MemberAuthAdapter {
     private final ServerPortProperties serverPortProperties;
 
     @Override
-    public Optional<MemberAuthResponseDto> getLoginInfo(MemberAuthRequestDto memberAuthRequestDto) {
+    public MemberAuthResponseDto getLoginInfo(MemberAuthRequestDto memberAuthRequestDto) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
         HttpEntity<MemberAuthRequestDto> requestEntity = new HttpEntity<>(memberAuthRequestDto, headers);
 
-        ResponseEntity<Optional<MemberAuthResponseDto>> responseEntity = restTemplate.exchange(
+        ResponseEntity<MemberAuthResponseDto> responseEntity = restTemplate.exchange(
                 serverPortProperties.getApiUri() + "/api/login",
                 HttpMethod.POST,
                 requestEntity,
