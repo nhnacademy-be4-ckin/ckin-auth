@@ -53,6 +53,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * JwtAuthorizationFilter 를 빈으로 등록하는 메서드 입니다.
+     *
+     * @return JwtAuthorizationFilter
+     */
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
         return new JwtAuthorizationFilter(
