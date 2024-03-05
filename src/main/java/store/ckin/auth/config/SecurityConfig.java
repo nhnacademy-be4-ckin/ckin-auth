@@ -27,8 +27,6 @@ import store.ckin.auth.token.service.TokenService;
 public class SecurityConfig {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final TokenService tokenService;
-
     /**
      * Security Filter 를 설정하는 Bean method 입니다.
      *
@@ -61,8 +59,7 @@ public class SecurityConfig {
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
         return new JwtAuthorizationFilter(
-                authenticationManager(null),
-                new JwtProvider(redisTemplate));
+                authenticationManager(null));
     }
 
     @Bean

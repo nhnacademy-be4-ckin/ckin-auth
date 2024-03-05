@@ -19,12 +19,8 @@ import store.ckin.auth.provider.JwtProvider;
  */
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    private final JwtProvider jwtProvider;
-
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
-                                  JwtProvider jwtProvider) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
-        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -43,7 +39,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String refreshToken = header.replace(JwtProvider.AUTHORIZATION_SCHEME_BEARER, "");
         log.debug("Token : {}", refreshToken);
 
-        if (!jwtProvider.isValidate(refreshToken)) {
+        if (!JwtProvider.isValidate(refreshToken)) {
             log.debug("JwtAuthorizationFilter : Refresh Token [{}] is not validate", refreshToken);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             chain.doFilter(request, response);

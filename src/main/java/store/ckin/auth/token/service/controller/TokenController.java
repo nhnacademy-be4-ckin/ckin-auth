@@ -25,8 +25,6 @@ import store.ckin.auth.token.service.domain.TokenResponseDto;
 @RestController
 @RequiredArgsConstructor
 public class TokenController {
-    private final JwtProvider jwtProvider;
-
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final TokenService tokenService;
@@ -54,7 +52,7 @@ public class TokenController {
     @PostMapping("/auth/reissue")
     public ResponseEntity<Void> reissueToken(@RequestHeader("Authorization") String refreshToken) {
         String jwt = refreshToken.replace(JwtProvider.AUTHORIZATION_SCHEME_BEARER, "");
-        String uuid = jwtProvider.resolveToken(jwt, "uuid");
+        String uuid = JwtProvider.resolveToken(jwt, "uuid");
         String id = (String) redisTemplate.opsForHash().get(uuid, "id");
         TokenRequestDto tokenRequestDto = new TokenRequestDto(id);
         TokenResponseDto tokenResponseDto = tokenService.issueToken(tokenRequestDto);
