@@ -1,6 +1,7 @@
 package store.ckin.auth.member.adapter.impl;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -34,7 +35,7 @@ public class MemberAuthAdapterImpl implements MemberAuthAdapter {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
-        HttpEntity<MemberAuthRequestDto> requestEntity = new HttpEntity<>(headers);
+        HttpEntity<MemberAuthRequestDto> requestEntity = new HttpEntity<>(memberAuthRequestDto, headers);
 
         ResponseEntity<MemberAuthResponseDto> responseEntity = restTemplate.exchange(
                 serverPortProperties.getApiUri() + "/api/login",
