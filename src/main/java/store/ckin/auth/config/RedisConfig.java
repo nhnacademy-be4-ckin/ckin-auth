@@ -9,6 +9,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
@@ -28,6 +29,8 @@ public class RedisConfig {
 
     private String password;
 
+    private int database;
+
     /**
      * Redis connection factory redis connection factory.
      *
@@ -39,6 +42,7 @@ public class RedisConfig {
         config.setHostName(host);
         config.setPort(port);
         config.setPassword(password);
+        config.setDatabase(database);
 
         return new LettuceConnectionFactory(config);
     }
@@ -53,6 +57,8 @@ public class RedisConfig {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setConnectionFactory(redisConnectionFactory());
 
         return redisTemplate;
