@@ -19,14 +19,12 @@ import store.ckin.auth.token.service.domain.TokenResponseDto;
 @Service
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
-    private final JwtProvider jwtProvider;
-
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public TokenResponseDto issueToken(TokenRequestDto tokenRequestDto) {
         String uuid = UUID.randomUUID().toString();
-        String refreshToken = jwtProvider.createRefreshToken(uuid);
+        String refreshToken = JwtProvider.createRefreshToken(uuid);
 
         redisTemplate.opsForHash()
                 .put(uuid, JwtProvider.REFRESH_TOKEN_SUBJECT, refreshToken);
@@ -37,7 +35,7 @@ public class TokenServiceImpl implements TokenService {
                 .put(uuid, "id", id);
         redisTemplate.expire(uuid, JwtProvider.REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
 
-        String accessToken = jwtProvider.createAccessToken(uuid);
+        String accessToken = JwtProvider.createAccessToken(uuid);
 
         return new TokenResponseDto(accessToken, refreshToken);
     }

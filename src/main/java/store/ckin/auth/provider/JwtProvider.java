@@ -8,7 +8,6 @@ import java.time.Duration;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,20 +26,18 @@ public class JwtProvider {
 
     public static final String REFRESH_TOKEN_SUBJECT = "ckin_refresh_token";
 
-    public static final long ACCESS_EXPIRATION_TIME = Duration.ofSeconds(30).toMillis();
+    public static final long ACCESS_EXPIRATION_TIME = Duration.ofMinutes(30).toMillis();
 
-    public static final long REFRESH_EXPIRATION_TIME = Duration.ofMinutes(3).toMillis();
+    public static final long REFRESH_EXPIRATION_TIME = Duration.ofHours(2).toMillis();
 
     public static final String AUTHORIZATION_SCHEME_BEARER = "Bearer ";
-
-    private final RedisTemplate<String, Object> redisTemplate;
 
     /**
      * JWT Access Token 을 생성하는 메서드 입니다.
      *
      * @return JWT Access Token
      */
-    private String createToken(String uuid, String tokenType, Long expirationTime) {
+    private static String createToken(String uuid, String tokenType, Long expirationTime) {
         Date now = new Date();
 
         return AUTHORIZATION_SCHEME_BEARER
@@ -52,11 +49,11 @@ public class JwtProvider {
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }
 
-    public String createAccessToken(String uuid) {
+    public static String createAccessToken(String uuid) {
         return createToken(uuid, ACCESS_TOKEN_SUBJECT, ACCESS_EXPIRATION_TIME);
     }
 
-    public String createRefreshToken(String uuid) {
+    public static String createRefreshToken(String uuid) {
         return createToken(uuid, REFRESH_TOKEN_SUBJECT, REFRESH_EXPIRATION_TIME);
     }
 
@@ -66,7 +63,7 @@ public class JwtProvider {
      * @param token Token
      * @return 유효성 검증 여부
      */
-    public boolean isValidate(String token) {
+    public static boolean isValidate(String token) {
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC512(SECRET_KEY)).build();
             verifier.verify(token);
@@ -84,7 +81,7 @@ public class JwtProvider {
      * @param name  Claim key
      * @return Claim Value
      */
-    public String resolveToken(String token, String name) {
+    public static String resolveToken(String token, String name) {
         return JWT.decode(token)
                 .getClaim(name)
                 .asString();

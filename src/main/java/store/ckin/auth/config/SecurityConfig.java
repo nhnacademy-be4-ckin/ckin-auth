@@ -3,7 +3,6 @@ package store.ckin.auth.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,8 +11,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import store.ckin.auth.filter.JwtAuthorizationFilter;
-import store.ckin.auth.provider.JwtProvider;
-import store.ckin.auth.token.service.TokenService;
 
 /**
  * Security 설정을 위한 클래스 입니다.
@@ -25,10 +22,6 @@ import store.ckin.auth.token.service.TokenService;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final RedisTemplate<String, Object> redisTemplate;
-
-    private final TokenService tokenService;
-
     /**
      * Security Filter 를 설정하는 Bean method 입니다.
      *
@@ -53,11 +46,15 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * JwtAuthorizationFilter 를 빈으로 등록하는 메서드 입니다.
+     *
+     * @return JwtAuthorizationFilter
+     */
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
         return new JwtAuthorizationFilter(
-                authenticationManager(null),
-                new JwtProvider(redisTemplate));
+                authenticationManager(null));
     }
 
     @Bean
