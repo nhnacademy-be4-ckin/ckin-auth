@@ -10,10 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import store.ckin.auth.filter.JwtAuthenticationFilter;
 import store.ckin.auth.filter.JwtAuthorizationFilter;
-import store.ckin.auth.member.adapter.MemberAuthAdapter;
 
 /**
  * Security 설정을 위한 클래스 입니다.
@@ -25,10 +22,6 @@ import store.ckin.auth.member.adapter.MemberAuthAdapter;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final MemberAuthAdapter memberAuthAdapter;
-
-    private final AuthenticationConfiguration authenticationConfiguration;
-
     /**
      * Security Filter 를 설정하는 Bean method 입니다.
      *
@@ -45,15 +38,27 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .logout().disable()
-                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(), memberAuthAdapter), BasicAuthenticationFilter.class)
-        ;
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/login").permitAll()
+                        .anyRequest().permitAll())
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    /**
+     * JwtAuthorizationFilter 를 빈으로 등록하는 메서드 입니다.
+     *
+     * @return JwtAuthorizationFilter
+     */
     @Bean
-    public AuthenticationManager authenticationManager()
+    public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
+        return new JwtAuthorizationFilter(
+                authenticationManager(null));
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
