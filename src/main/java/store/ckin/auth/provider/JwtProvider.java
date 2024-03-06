@@ -26,9 +26,9 @@ public class JwtProvider {
 
     public static final String REFRESH_TOKEN_SUBJECT = "ckin_refresh_token";
 
-    public static final long ACCESS_EXPIRATION_TIME = Duration.ofSeconds(30).toMillis();
+    public static final long ACCESS_EXPIRATION_TIME = Duration.ofMinutes(30).toMillis();
 
-    public static final long REFRESH_EXPIRATION_TIME = Duration.ofMinutes(3).toMillis();
+    public static final long REFRESH_EXPIRATION_TIME = Duration.ofHours(2).toMillis();
 
     public static final String AUTHORIZATION_SCHEME_BEARER = "Bearer ";
 
