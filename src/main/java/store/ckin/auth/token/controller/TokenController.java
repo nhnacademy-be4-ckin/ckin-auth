@@ -1,4 +1,4 @@
-package store.ckin.auth.token.service.controller;
+package store.ckin.auth.token.controller;
 
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import store.ckin.auth.provider.JwtProvider;
+import store.ckin.auth.token.domain.TokenRequestDto;
+import store.ckin.auth.token.domain.TokenResponseDto;
 import store.ckin.auth.token.service.TokenService;
-import store.ckin.auth.token.service.domain.TokenRequestDto;
-import store.ckin.auth.token.service.domain.TokenResponseDto;
 
 /**
  * 토큰에 대한 요청을 응답하는 REST Controller 입니다.

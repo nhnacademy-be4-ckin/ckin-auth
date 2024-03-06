@@ -1,4 +1,4 @@
-package store.ckin.auth.token.service.domain;
+package store.ckin.auth.token.domain;
 
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
