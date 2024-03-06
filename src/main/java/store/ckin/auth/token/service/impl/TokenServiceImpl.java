@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import store.ckin.auth.provider.JwtProvider;
+import store.ckin.auth.token.domain.TokenRequestDto;
+import store.ckin.auth.token.domain.TokenResponseDto;
 import store.ckin.auth.token.service.TokenService;
-import store.ckin.auth.token.service.domain.TokenRequestDto;
-import store.ckin.auth.token.service.domain.TokenResponseDto;
 
 /**
  * TokenService 의 구현체 입니다.
