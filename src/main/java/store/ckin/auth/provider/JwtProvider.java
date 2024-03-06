@@ -40,8 +40,7 @@ public class JwtProvider {
     private static String createToken(String uuid, String tokenType, Long expirationTime) {
         Date now = new Date();
 
-        return AUTHORIZATION_SCHEME_BEARER
-                + JWT.create()
+        return JWT.create()
                 .withSubject(tokenType)
                 .withClaim("uuid", uuid)
                 .withIssuedAt(now)
