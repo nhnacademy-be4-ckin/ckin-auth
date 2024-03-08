@@ -26,12 +26,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        if (request.getRequestURI().equals("/auth/login")) {
+            chain.doFilter(request, response);
+
+            return;
+        }
+
         String header = request.getHeader("Authorization");
 
         if (Objects.isNull(header) || !header.startsWith(JwtProvider.AUTHORIZATION_SCHEME_BEARER)) {
             log.debug("JwtAuthorizationFilter : Invalid header [{}]", header);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            chain.doFilter(request, response);
 
             return;
         }
@@ -42,7 +47,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (!JwtProvider.isValidate(refreshToken)) {
             log.debug("JwtAuthorizationFilter : Refresh Token [{}] is not validate", refreshToken);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            chain.doFilter(request, response);
 
             return;
         }

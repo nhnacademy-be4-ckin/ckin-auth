@@ -1,4 +1,4 @@
-package store.ckin.auth.token.service.domain;
+package store.ckin.auth.token.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
