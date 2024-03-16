@@ -30,13 +30,26 @@ public class TokenServiceImpl implements TokenService {
                 .put(uuid, JwtProvider.REFRESH_TOKEN_SUBJECT, refreshToken);
 
         String id = tokenRequestDto.getId();
+        String authority = tokenRequestDto.getAuthority();
 
         redisTemplate.opsForHash()
                 .put(uuid, "id", id);
+        redisTemplate.opsForHash()
+                .put(uuid, "authority", authority);
         redisTemplate.expire(uuid, JwtProvider.REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
 
         String accessToken = JwtProvider.createAccessToken(uuid);
 
         return new TokenResponseDto(accessToken, refreshToken);
+    }
+
+    @Override
+    public TokenResponseDto reissueToken(String refreshToken) {
+        String jwt = refreshToken.replace(JwtProvider.AUTHORIZATION_SCHEME_BEARER, "");
+        String uuid = JwtProvider.resolveToken(jwt, "uuid");
+        String id = (String) redisTemplate.opsForHash().get(uuid, "id");
+        String authority = (String) redisTemplate.opsForHash().get(uuid, "authority");
+
+        return issueToken(new TokenRequestDto(id, authority));
     }
 }
