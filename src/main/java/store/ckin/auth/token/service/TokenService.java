@@ -11,4 +11,6 @@ import store.ckin.auth.token.domain.TokenResponseDto;
  */
 public interface TokenService {
     TokenResponseDto issueToken(TokenRequestDto tokenRequestDto);
+
+    TokenResponseDto reissueToken(String refreshToken);
 }
