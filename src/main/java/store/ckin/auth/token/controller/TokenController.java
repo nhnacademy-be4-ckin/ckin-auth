@@ -3,14 +3,12 @@ package store.ckin.auth.token.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-import store.ckin.auth.provider.JwtProvider;
 import store.ckin.auth.token.domain.TokenRequestDto;
 import store.ckin.auth.token.domain.TokenResponseDto;
 import store.ckin.auth.token.service.TokenService;
@@ -25,8 +23,6 @@ import store.ckin.auth.token.service.TokenService;
 @RestController
 @RequiredArgsConstructor
 public class TokenController {
-    private final RedisTemplate<String, Object> redisTemplate;
-
     private final TokenService tokenService;
 
     /**
@@ -50,12 +46,8 @@ public class TokenController {
      * @return 재발급된 AccessToken, RefreshToken
      */
     @PostMapping("/auth/reissue")
-    public ResponseEntity<Void> reissueToken(@RequestHeader("Authorization") String refreshToken) {
-        String jwt = refreshToken.replace(JwtProvider.AUTHORIZATION_SCHEME_BEARER, "");
-        String uuid = JwtProvider.resolveToken(jwt, "uuid");
-        String id = (String) redisTemplate.opsForHash().get(uuid, "id");
-        TokenRequestDto tokenRequestDto = new TokenRequestDto(id);
-        TokenResponseDto tokenResponseDto = tokenService.issueToken(tokenRequestDto);
+    public ResponseEntity<TokenResponseDto> reissueToken(@RequestHeader("Authorization") String refreshToken) {
+        TokenResponseDto tokenResponseDto = tokenService.reissueToken(refreshToken);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
